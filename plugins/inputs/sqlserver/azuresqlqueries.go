@@ -398,6 +398,12 @@ IF SERVERPROPERTY('EngineEdition') <> 5 BEGIN /*not Azure SQL DB*/
 	RETURN
 END;
 
+/* Disable collecting data from replicas until Query store is enabled on read replicas
+Otherwise, we'll have duplicate data from 2 replicas if read replica is enabled for monitoring. */ 
+IF DATABASEPROPERTYEX(DB_NAME(), 'Updateability') = 'READ_WRITE' 
+	RETURN
+END;
+
 DECLARE @lastIntervalEndTimestamp BIGINT = 0;
 
 /* Get the time when the query was previously called */
